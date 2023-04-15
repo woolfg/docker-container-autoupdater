@@ -2,12 +2,11 @@
 
 docker=$(which docker)
 
+platform="amd64"
+os="linux"
+
 # list all services with label autoupdater=true
 services=$($docker service ls --filter label=docker_swarm_autoupdater.enable=true --format "{{.Name}}")
-
-# get platform docker is running on
-# format should be amd64, arm64, etc
-platform=$($docker info --format "{{.Architecture}}")
 
 #loop through services
 for service in $services; do
@@ -33,7 +32,7 @@ for service in $services; do
     manifest=$($docker manifest inspect $image_name_version)
 
     # filter manifest by platform.architecture and get new matching digest
-    new_digest=$(echo $manifest | jq -r ".manifests[] | select(.platform.architecture == \"amd64\" and .platform.os == \"linux\") | .digest")
+    new_digest=$(echo $manifest | jq -r ".manifests[] | select(.platform.architecture == \"$platform\" and .platform.os == \"$os\") | .digest")
     echo "New digest: $new_digest"
 
     # the digest might be different even though it is the same image
