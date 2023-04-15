@@ -28,17 +28,12 @@ for service in $services; do
         continue
     fi    
 
-    # fetch manifest of image
-    manifest=$($docker manifest inspect $image_name_version)
+    # pull image to get updated image
+    $docker pull $image_name_version
 
-    # filter manifest by platform.architecture and get new matching digest
-    new_digest=$(echo $manifest | jq -r ".manifests[] | select(.platform.architecture == \"$platform\" and .platform.os == \"$os\") | .digest")
+    # get digest of downloaded image
+    new_digest=$($docker image inspect $image_name_version --format "{{index .RepoDigests 0}}" | cut -d'@' -f2)
     echo "New digest: $new_digest"
-
-    # the digest might be different even though it is the same image
-    # as repo digests also depend on the manifest and additional metadata
-    # thus, the service might be updated, even though the image is the same
-    # this should happen just once, as from then on the digests should match
 
     # if new digest is empty, skip service
     if [ -z "$new_digest" ]; then
