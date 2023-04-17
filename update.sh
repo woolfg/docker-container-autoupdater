@@ -5,8 +5,15 @@ docker=$(which docker)
 platform="amd64"
 os="linux"
 
+echo "Starting autoupdater"
+
 # list all services with label autoupdater=true
 services=$($docker service ls --filter label=docker_swarm_autoupdater.enable=true --format "{{.Name}}")
+
+if [ $? -ne 0 ]; then
+    echo "Failed to get services"
+    exit 1
+fi
 
 #loop through services
 for service in $services; do
