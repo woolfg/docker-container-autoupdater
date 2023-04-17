@@ -9,3 +9,7 @@ services:
       environment:
         PORT: 80
         HOOK: /update-Nohn0lahGh5ahnaeng9Xolaewu2fae
+      deploy:
+        placement:
+          constraints:
+            - node.role == manager
