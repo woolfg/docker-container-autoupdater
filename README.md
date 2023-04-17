@@ -32,4 +32,4 @@ with the label `docker_swarm_autoupdater.enable=true` to the latest digest of th
 
 ## Contributions
 
-Thanks to [@mre](https://github.com/woolfg) for the input and code reviews.
+Thanks to [@mre](https://github.com/mre) for the input and code reviews.
