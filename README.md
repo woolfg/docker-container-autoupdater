@@ -25,6 +25,7 @@ services:
 
 When calling the hook `/update-PUT_YOUR_RANDOM_STRING_HERE` the autoupdater will update all services
 with the label `docker_swarm_autoupdater.enable=true` to the latest digest of the specified tag (e.g. `latest`).
+
 ## Design decisions
 
 - Webhook image tags: To be as secure as possible I decided to not accept any input from the webhook. Therfore, a fixed tag (e.g. latest) is used for the image.
