@@ -1,4 +1,5 @@
 const express = require('express');
+const { exec } = require('child_process');
 
 // define environment variables
 const PORT = process.env.PORT || 3000;
@@ -13,7 +14,6 @@ app.get(HOOK, (req, res) => {
   // avoid to start multiple concurrent updates
   if (!updateRunning) {
     updateRunning = true;
-    const { exec } = require('child_process');
     exec('./update.sh', (err, stdout, stderr) => {
       if (err) {
         console.error(err);

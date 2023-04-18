@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Updates Docker Swarm Service images automatically",
   "main": "index.js",
-  "author": "",
+  "author": "Wolfgang Gassler",
   "license": "MIT",
   "scripts": {
     "start": "nodemon index.js"
