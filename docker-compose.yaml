@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+    autoupdater:
+      build: .
+      ports:
+        - "8080:80"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      environment:
+        PORT: 80
+        HOOK: /update-Nohn0lahGh5ahnaeng9Xolaewu2fae
+      deploy:
+        placement:
+          constraints:
+            - node.role == manager

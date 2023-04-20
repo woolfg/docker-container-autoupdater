@@ -1,0 +1,15 @@
+{
+  "name": "docker_swarm_autoupdater",
+  "version": "1.0.0",
+  "description": "Updates Docker Swarm Service images automatically",
+  "main": "index.js",
+  "author": "Wolfgang Gassler",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22"
+  }
+}
