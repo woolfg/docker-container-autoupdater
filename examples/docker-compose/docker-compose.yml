@@ -1,0 +1,54 @@
+# Docker Compose Setup (Full)
+# This example shows a complete setup with both updater and trigger services
+# Suitable for regular Docker Compose environments
+
+version: '3.8'
+
+services:
+  # Updater service - runs as root with Docker socket access (isolated)
+  updater:
+    image: woolfg/docker-swarm-autoupdater-updater:latest
+    container_name: docker-autoupdater-updater
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - trigger-volume:/shared
+    environment:
+      CHECK_INTERVAL: 5      # Check for triggers every 5 seconds
+      UPDATE_INTERVAL: 900   # Auto-update every 15 minutes
+      TRIGGER_FILE: /shared/update-trigger
+    restart: unless-stopped
+    network_mode: "none"     # No network access for security
+    labels:
+      - "docker_autoupdater.enable=false"  # Don't update the updater itself
+
+  # Trigger service - public facing, no privileged access
+  trigger:
+    image: woolfg/docker-swarm-autoupdater-trigger:latest
+    container_name: docker-autoupdater-trigger
+    ports:
+      - "8080:3000"
+    volumes:
+      - trigger-volume:/shared
+    environment:
+      PORT: 3000
+      HOOK: /update-YOUR_SECRET_WEBHOOK_PATH_HERE
+      TRIGGER_FILE: /shared/update-trigger
+    restart: unless-stopped
+    depends_on:
+      - updater
+    labels:
+      - "docker_autoupdater.enable=false"  # Don't update the trigger itself
+
+volumes:
+  trigger-volume:
+
+# Example of a service that will be auto-updated
+# Uncomment and modify as needed:
+#
+#  your-app:
+#    image: your-app:latest
+#    ports:
+#      - "80:80"
+#    labels:
+#      - "docker_autoupdater.enable=true"  # Enable auto-updates for this service
+#    restart: unless-stopped

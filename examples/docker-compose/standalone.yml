@@ -1,0 +1,32 @@
+# Standalone Updater Setup (No Webhook)
+# This example shows only the updater service for scheduled updates
+# No webhook endpoint - updates happen automatically every 15 minutes
+
+version: '3.8'
+
+services:
+  # Updater service only - runs as root with Docker socket access
+  updater:
+    image: woolfg/docker-swarm-autoupdater-updater:latest
+    container_name: docker-autoupdater-updater
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      CHECK_INTERVAL: 5      # Check interval (not used without trigger file)
+      UPDATE_INTERVAL: 900   # Auto-update every 15 minutes (900 seconds)
+      # No TRIGGER_FILE - runs in standalone mode
+    restart: unless-stopped
+    network_mode: "none"     # No network access needed
+    labels:
+      - "docker_autoupdater.enable=false"  # Don't update the updater itself
+
+# Example of a service that will be auto-updated
+# Uncomment and modify as needed:
+#
+#  your-app:
+#    image: your-app:latest
+#    ports:
+#      - "80:80"
+#    labels:
+#      - "docker_autoupdater.enable=true"  # Enable auto-updates for this service
+#    restart: unless-stopped

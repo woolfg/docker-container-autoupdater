@@ -1,0 +1,80 @@
+# Docker Swarm Setup (Full)
+# This example shows a complete setup for Docker Swarm with both updater and trigger services
+# The updater MUST run on a manager node to access Docker Swarm APIs
+
+version: '3.8'
+
+services:
+  # Updater service - runs as root with Docker socket access (isolated)
+  updater:
+    image: woolfg/docker-swarm-autoupdater-updater:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - trigger-volume:/shared
+    environment:
+      CHECK_INTERVAL: 5      # Check for triggers every 5 seconds
+      UPDATE_INTERVAL: 900   # Auto-update every 15 minutes
+      TRIGGER_FILE: /shared/update-trigger
+    restart_policy:
+      condition: unless-stopped
+    networks:
+      - autoupdater-internal
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager  # MUST run on manager node for swarm access
+      labels:
+        - "docker_swarm_autoupdater.enable=false"  # Don't update itself
+
+  # Trigger service - public facing, no privileged access
+  trigger:
+    image: woolfg/docker-swarm-autoupdater-trigger:latest
+    ports:
+      - target: 3000
+        published: 8080
+        mode: host
+    volumes:
+      - trigger-volume:/shared
+    environment:
+      PORT: 3000
+      HOOK: /update-YOUR_SECRET_WEBHOOK_PATH_HERE
+      TRIGGER_FILE: /shared/update-trigger
+    restart_policy:
+      condition: unless-stopped
+    networks:
+      - autoupdater-external
+      - autoupdater-internal
+    deploy:
+      replicas: 1
+      labels:
+        - "docker_swarm_autoupdater.enable=false"  # Don't update itself
+
+volumes:
+  trigger-volume:
+    driver: local
+
+networks:
+  autoupdater-external:
+    driver: overlay
+    attachable: true
+  autoupdater-internal:
+    driver: overlay
+    internal: true
+
+# Example of a service that will be auto-updated
+# Uncomment and modify as needed:
+#
+#  your-app:
+#    image: your-app:latest
+#    ports:
+#      - target: 80
+#        published: 80
+#        mode: ingress
+#    networks:
+#      - autoupdater-external
+#    deploy:
+#      replicas: 2
+#      labels:
+#        - "docker_swarm_autoupdater.enable=true"  # Enable auto-updates
+#      restart_policy:
+#        condition: unless-stopped
