@@ -1,6 +1,6 @@
 # Docker Swarm Autoupdater
 
-Ssolution for automatically updating Docker Swarm services and Docker Compose containers when new images are available.
+solution for automatically updating Docker Swarm services and Docker Compose containers when new images are available. It can be done periodically or triggered by a webhook.
 
 ## Service Configuration
 
@@ -17,7 +17,9 @@ services:
 
 ## Architecture
 
-This project uses a **two-container architecture** that separates responsibilities for enhanced security:
+This project uses a **two-container architecture** that separates responsibilities for enhanced security.
+If you do not need webhooks, you can also run the updater service as a standalone container and update images
+periodically.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -76,6 +78,7 @@ This project uses a **two-container architecture** that separates responsibiliti
    - Has Docker socket access for container management
 
 This architecture ensures that even if the public-facing trigger service is compromised, attackers cannot directly access Docker or your containers.
+In case you do not need webhooks, you can run the updater service as a standalone container and update images periodically.
 
 ## Quick Start
 
