@@ -4,7 +4,6 @@ on:
   push:
     tags:
       - 'v*'  # Trigger on version tags like v1.0.0
-  push:
     branches:
       - main  # Also build on main branch pushes
   pull_request:
