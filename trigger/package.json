@@ -1,0 +1,21 @@
+{
+  "name": "docker-swarm-autoupdater-trigger",
+  "version": "1.0.0",
+  "description": "Trigger service for Docker Swarm Autoupdater",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "keywords": [
+    "docker",
+    "swarm",
+    "autoupdater",
+    "webhook",
+    "trigger"
+  ],
+  "author": "",
+  "license": "MIT"
+}

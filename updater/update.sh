@@ -56,8 +56,6 @@ for service in $services; do
     echo " - $service"
 done
 
-exit 1;
-
 #loop through services
 for service in $services; do
 
