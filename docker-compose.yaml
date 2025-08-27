@@ -4,6 +4,10 @@ services:
     build: ./updater
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      # if using custom login data to e.g. your private registry, mount the docker config as well
+      - /root/.docker:/root/.docker:ro
+      # if using docker compose files, mount this directory as well
+      - /tmp/docker-autoupdater-test:/tmp/docker-autoupdater-test:ro
       - trigger-volume:/shared
     environment:
       CHECK_INTERVAL: 5

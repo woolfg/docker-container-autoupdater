@@ -69,8 +69,38 @@ for service in $services; do
     else
       image_long=$($docker container inspect $service --format "{{.Config.Image}}")
     fi
-    image_digest=${image_long##*@}
-    image_name_version=${image_long%@*}
+    
+    # Check if image has digest (contains @)
+    if [[ "$image_long" == *"@"* ]]; then
+        # Image has digest
+        image_digest=${image_long##*@}
+        image_name_version=${image_long%@*}
+    else
+        # Image doesn't have digest - get current digest from image inspection
+        image_name_version="$image_long"
+        
+        # Add :latest if no tag specified
+        if [[ "$image_name_version" != *":"* ]]; then
+            image_name_version="$image_name_version:latest"
+        fi
+        
+        # Get current digest from the actual image
+        if [ "$docker_swarm" = true ]; then
+            # For swarm, get the digest from service's current image
+            current_image_id=$($docker service ps $service --no-trunc --format "{{.Image}}" | head -n1)
+            if [[ "$current_image_id" == *"@"* ]]; then
+                image_digest=${current_image_id##*@}
+            else
+                # Fallback: inspect the local image
+                image_digest=$($docker image inspect $image_name_version --format "{{index .RepoDigests 0}}" 2>/dev/null | cut -d'@' -f2)
+            fi
+        else
+            # For compose, get digest from container's current image
+            container_image_id=$($docker container inspect $service --format "{{.Image}}")
+            image_digest=$($docker image inspect $container_image_id --format "{{index .RepoDigests 0}}" 2>/dev/null | cut -d'@' -f2)
+        fi
+    fi
+    
     echo "Current image: $image_name_version"
     echo "Current digest: $image_digest"
 

@@ -13,13 +13,29 @@ TRIGGER_IMAGE ?= $(DOCKER_REGISTRY)/$(DOCKER_USER)/docker-swarm-autoupdater-trig
 help: ## help message, list all commands
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 
+.PHONY: test
+test: test-update ## run tests
+
+.PHONY: test-update
+test-update: ## run update simulation test (pulls older image, tags as latest, then tests update)
+	bash ./tests/docker-compose-update.sh
+
 .PHONY: build
 build: ## build docker image
 	$(COMPOSE) build
 
+.PHONY: logs
+logs: ## view logs
+	$(COMPOSE) logs
+
 .PHONY: up
 up: ## start docker container
-	$(COMPOSE) up
+	@mkdir -p /tmp/docker-autoupdater-test
+	$(COMPOSE) up -d
+
+.PHONY: down
+down: ## stop docker container
+	$(COMPOSE) down -v
 
 .PHONY: shell-%
 shell-%: ## run shell in container

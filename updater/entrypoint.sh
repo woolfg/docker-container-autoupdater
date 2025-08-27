@@ -8,7 +8,7 @@ CHECK_INTERVAL=${CHECK_INTERVAL:-5}          # Check trigger file every N second
 UPDATE_INTERVAL=${UPDATE_INTERVAL:-900}      # Run updater every N seconds (15 minutes)
 TRIGGER_FILE=${TRIGGER_FILE:-}               # Optional trigger file path
 
-echo "Docker Swarm Autoupdater starting..."
+echo "Docker Autoupdater starting..."
 if [ -n "$TRIGGER_FILE" ]; then
     echo "Trigger file: $TRIGGER_FILE"
     echo "Check interval: ${CHECK_INTERVAL} seconds"

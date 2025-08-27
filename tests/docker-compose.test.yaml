@@ -1,0 +1,11 @@
+services:
+  service1:
+    image: alpine:latest  # Use older version to trigger update to latest
+    command: ["sh", "-c", "while true; do echo 'Service 1 running'; sleep 5; done"]
+    labels:
+      - "docker_autoupdater.enable=true"
+  service2:
+    image: nginx:1.24   # Use older nginx version to trigger update to latest
+    command: ["nginx", "-g", "daemon off;"]
+    labels:
+      - "docker_autoupdater.enable=false"
