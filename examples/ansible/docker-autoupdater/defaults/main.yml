@@ -1,0 +1,33 @@
+---
+# Docker Autoupdater configuration
+
+# Docker images
+docker_autoupdater_updater_image: "woolfg/docker-swarm-autoupdater-updater:latest"
+docker_autoupdater_trigger_image: "woolfg/docker-swarm-autoupdater-trigger:latest"
+
+# Volume configuration (only used when trigger is enabled)
+docker_autoupdater_volume_name: "docker_autoupdater_shared_volume"
+
+# Service configuration
+docker_autoupdater_force_pull: false
+
+# Updater service configuration
+docker_autoupdater_check_interval: 5          # Check trigger file every N seconds
+docker_autoupdater_update_interval: 900       # Auto-update every N seconds (15 minutes)
+docker_autoupdater_trigger_file: "/shared/update-trigger"
+
+# Trigger service configuration
+docker_autoupdater_trigger_port: 8080         # External port for webhook
+docker_autoupdater_trigger_internal_port: 3000
+# IMPORTANT: Change this to a secure random string!
+docker_autoupdater_webhook_path: "/update-{{ ansible_hostname }}-{{ ansible_date_time.epoch }}"
+
+# Network configuration (only used when trigger is enabled)
+docker_autoupdater_network_name: "docker_autoupdater_network"
+
+# Enable/disable services
+docker_autoupdater_enable_trigger: true       # Set to false if you only want scheduled updates
+docker_autoupdater_enable_updater: true
+
+# Restart policy
+docker_autoupdater_restart_policy: "unless-stopped"

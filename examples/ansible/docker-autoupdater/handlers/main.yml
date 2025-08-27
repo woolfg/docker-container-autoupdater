@@ -1,0 +1,11 @@
+---
+- name: restart docker-autoupdater
+  community.docker.docker_compose_v2:
+    project_name: docker-autoupdater
+    state: restarted
+
+- name: recreate docker-autoupdater
+  community.docker.docker_compose_v2:
+    project_name: docker-autoupdater
+    state: present
+    recreate: always

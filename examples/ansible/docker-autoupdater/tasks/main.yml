@@ -1,0 +1,88 @@
+---
+- name: Create shared volume for docker-autoupdater
+  docker_volume:
+    name: "{{ docker_autoupdater_volume_name }}"
+    state: present
+  when: docker_autoupdater_enable_trigger
+
+- name: Create docker-autoupdater network
+  docker_network:
+    name: "{{ docker_autoupdater_network_name }}"
+    state: present
+  when: docker_autoupdater_enable_trigger
+
+- name: Deploy docker-autoupdater services (both updater and trigger)
+  community.docker.docker_compose_v2:
+    project_name: docker-autoupdater
+    definition:
+      version: '3.8'
+      services:
+        updater:
+          image: "{{ docker_autoupdater_updater_image }}"
+          container_name: docker-autoupdater-updater
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - "{{ docker_autoupdater_volume_name }}:/shared"
+          environment:
+            CHECK_INTERVAL: "{{ docker_autoupdater_check_interval }}"
+            UPDATE_INTERVAL: "{{ docker_autoupdater_update_interval }}"
+            TRIGGER_FILE: "{{ docker_autoupdater_trigger_file }}"
+          restart: "{{ docker_autoupdater_restart_policy }}"
+          network_mode: "none"
+          labels:
+            docker_autoupdater.enable: "false"
+        trigger:
+          image: "{{ docker_autoupdater_trigger_image }}"
+          container_name: docker-autoupdater-trigger
+          ports:
+            - "{{ docker_autoupdater_trigger_port }}:{{ docker_autoupdater_trigger_internal_port }}"
+          volumes:
+            - "{{ docker_autoupdater_volume_name }}:/shared"
+          environment:
+            PORT: "{{ docker_autoupdater_trigger_internal_port }}"
+            HOOK: "{{ docker_autoupdater_webhook_path }}"
+            TRIGGER_FILE: "{{ docker_autoupdater_trigger_file }}"
+          restart: "{{ docker_autoupdater_restart_policy }}"
+          networks:
+            - "{{ docker_autoupdater_network_name }}"
+          depends_on:
+            - updater
+          labels:
+            docker_autoupdater.enable: "false"
+      volumes:
+        docker_autoupdater_trigger_volume:
+          external: true
+      networks:
+        docker_autoupdater_network:
+          external: true
+    state: present
+    pull: "{{ 'always' if docker_autoupdater_force_pull else 'missing' }}"
+  when: docker_autoupdater_enable_trigger and docker_autoupdater_enable_updater
+
+- name: Deploy docker-autoupdater (updater only)
+  community.docker.docker_compose_v2:
+    project_name: docker-autoupdater
+    definition:
+      version: '3.8'
+      services:
+        updater:
+          image: "{{ docker_autoupdater_updater_image }}"
+          container_name: docker-autoupdater-updater
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+          environment:
+            CHECK_INTERVAL: "{{ docker_autoupdater_check_interval }}"
+            UPDATE_INTERVAL: "{{ docker_autoupdater_update_interval }}"
+            # No trigger file when running standalone
+          restart: "{{ docker_autoupdater_restart_policy }}"
+          network_mode: "none"
+          labels:
+            docker_autoupdater.enable: "false"
+    state: present
+    pull: "{{ 'always' if docker_autoupdater_force_pull else 'missing' }}"
+  when: not docker_autoupdater_enable_trigger and docker_autoupdater_enable_updater
+
+- name: Display webhook URL
+  debug:
+    msg: "Docker autoupdater webhook URL: http://{{ ansible_default_ipv4.address }}:{{ docker_autoupdater_trigger_port }}{{ docker_autoupdater_webhook_path }}"
+  when: docker_autoupdater_enable_trigger
