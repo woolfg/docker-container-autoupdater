@@ -1,30 +1,25 @@
 const express = require('express');
-const { exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 // define environment variables
 const PORT = process.env.PORT || 3000;
-const HOOK = process.env.HOOK || '/hook123456789';
+const HOOK = process.env.HOOK || '/hook123456';
+const TRIGGER_FILE = process.env.TRIGGER_FILE || '/tmp/update-trigger';
 
 // create express app
 const app = express();
 
-let updateRunning = false;
-
 app.get(HOOK, (req, res) => {
-  // avoid to start multiple concurrent updates
-  if (!updateRunning) {
-    updateRunning = true;
-    exec('./update.sh', (err, stdout, stderr) => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log(stdout);
-      }
-      updateRunning = false;
-    })
-    res.status(200).send('Update started');
-  } else {
-    res.status(429).send('Update already running');
+  try {
+    // Create trigger file with timestamp
+    const timestamp = new Date().toISOString();
+    fs.writeFileSync(TRIGGER_FILE, timestamp);
+    console.log(`Trigger file created at ${TRIGGER_FILE} with timestamp: ${timestamp}`);
+    res.status(200).send('Update trigger created');
+  } catch (err) {
+    console.error('Error creating trigger file:', err);
+    res.status(500).send('Failed to create update trigger');
   }
 })
 
