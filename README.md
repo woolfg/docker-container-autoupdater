@@ -15,7 +15,7 @@ services:
     # ... rest of your service configuration
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 This project uses a **two-container architecture** that separates responsibilities for enhanced security:
 
@@ -58,7 +58,7 @@ This project uses a **two-container architecture** that separates responsibiliti
 
 ```
 
-## 🔒 Why Two Containers?
+## Why Two Containers?
 
 **Security through separation of concerns:**
 
@@ -77,7 +77,7 @@ This project uses a **two-container architecture** that separates responsibiliti
 
 This architecture ensures that even if the public-facing trigger service is compromised, attackers cannot directly access Docker or your containers.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Docker Swarm
 
@@ -201,10 +201,10 @@ curl -X GET http://your-server:8080/update-YOUR_SECRET_WEBHOOK_PATH_HERE
 | `TRIGGER_FILE` | `/shared/update-trigger` | Path to trigger file |
 
 
-## 🤝 Contributions
+## Contributions
 
 Thanks to [@mre](https://github.com/mre) for the input and code reviews.
 
-## 📄 License
+## License
 
 MIT License - see LICENSE file for details.
