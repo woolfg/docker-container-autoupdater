@@ -81,7 +81,10 @@ for service in $services; do
     fi    
 
     # pull image to get updated image
-    $docker pull $image_name_version
+    if ! $docker pull $image_name_version; then
+      echo "Failed to pull image for $service, skipping..."
+      continue
+    fi
 
     # get digest of downloaded image
     new_digest=$($docker image inspect $image_name_version --format "{{index .RepoDigests 0}}" | cut -d'@' -f2)
@@ -99,12 +102,16 @@ for service in $services; do
         if [ "$docker_swarm" = true ]; then
           $docker service update --image $image_name_version@$new_digest $service
         else
-          # For Docker Compose, we need to recreate the container
-          echo "Stopping container $service"
-          $docker stop $service
-          echo "Removing container $service"
-          $docker rm $service
-          echo "Note: Container $service has been stopped and removed. You may need to restart your Docker Compose setup."
+          # find the docker_compose file and home directory that was used
+          docker_compose_file=$($docker inspect -f '{{ index .Config.Labels "com.docker.compose.project.config_files" }}' "$service")
+          home_dir=$($docker inspect -f '{{ index .Config.Labels "com.docker.compose.project.working_dir" }}' "$service")
+
+          if [ ! -f "$docker_compose_file" ] || [ ! -d "$home_dir" ]; then
+              echo "Error: Cannot access $docker_compose_file or $home_dir. Please mount the directory first."
+              continue
+          fi
+          echo "Restarting $docker_compose_file for $service in $home_dir"
+          (cd $home_dir && $docker compose -f $docker_compose_file up -d --remove-orphans)
         fi
     else
         echo "No update needed"

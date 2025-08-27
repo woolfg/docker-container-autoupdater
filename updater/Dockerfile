@@ -1,7 +1,7 @@
 FROM alpine:latest
 
-# Install docker CLI and bash
-RUN apk add --no-cache docker bash
+# Install docker CLI and bash, vim, docker compose plugin
+RUN apk add --no-cache docker bash vim docker-compose
 
 # Copy update script and entrypoint
 COPY update.sh /app/update.sh
