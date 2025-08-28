@@ -1,4 +1,4 @@
-# Docker Swarm Autoupdater
+# Docker Container Autoupdater
 
 solution for automatically updating Docker Swarm services and Docker Compose containers when new images are available. It can be done periodically or triggered by a webhook.
 
@@ -64,14 +64,14 @@ periodically.
 
 **Security through separation of concerns:**
 
-1. **Trigger Container** (`woolfg/docker-swarm-autoupdater-trigger`)
+1. **Trigger Container** (`woolfg/docker-container-autoupdater-trigger`)
    - Handles HTTP webhooks from external sources
    - Is connted to the outside world
    - Runs as non-root user
    - **No Docker socket access** - can't control containers
    - Only writes trigger files to shared volume
 
-2. **Updater Container** (`woolfg/docker-swarm-autoupdater-updater`)
+2. **Updater Container** (`woolfg/docker-container-autoupdater-updater`)
    - Monitors for trigger files
    - Runs scheduled updates every 15 minutes
    - **No network access** - can't be reached from outside
@@ -88,7 +88,7 @@ In case you do not need webhooks, you can run the updater service as a standalon
 services:
   # Updater service - runs as root with Docker socket access (isolated)
   updater:
-    image: woolfg/docker-swarm-autoupdater-updater:latest
+    image: woolfg/docker-container-autoupdater-updater:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - trigger-volume:/shared
@@ -105,7 +105,7 @@ services:
 
   # Trigger service - public facing, no privileged access
   trigger:
-    image: woolfg/docker-swarm-autoupdater-trigger:latest
+    image: woolfg/docker-container-autoupdater-trigger:latest
     ports:
       - "8080:3000"
     volumes:
@@ -131,7 +131,7 @@ version: '3.8'
 
 services:
   updater:
-    image: woolfg/docker-swarm-autoupdater-updater:latest
+    image: woolfg/docker-container-autoupdater-updater:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - trigger-volume:/shared
@@ -140,7 +140,7 @@ services:
     restart: unless-stopped
 
   trigger:
-    image: woolfg/docker-swarm-autoupdater-trigger:latest
+    image: woolfg/docker-container-autoupdater-trigger:latest
     ports:
       - "8080:3000"
     volumes:
@@ -161,7 +161,7 @@ If you only want scheduled updates without webhooks:
 ```yaml
 services:
   updater:
-    image: woolfg/docker-swarm-autoupdater-updater:latest
+    image: woolfg/docker-container-autoupdater-updater:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:

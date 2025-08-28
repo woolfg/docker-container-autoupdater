@@ -7,7 +7,7 @@ version: '3.8'
 services:
   # Updater service only - runs as root with Docker socket access
   updater:
-    image: woolfg/docker-swarm-autoupdater-updater:latest
+    image: woolfg/docker-container-autoupdater-updater:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
@@ -21,7 +21,7 @@ services:
         constraints:
           - node.role == manager  # MUST run on manager node for swarm access
       labels:
-        - "docker_swarm_autoupdater.enable=false"  # Don't update itself
+        - "docker_autoupdater.enable=false"  # Don't update itself
 
 # Example of a service that will be auto-updated
 # Uncomment and modify as needed:
@@ -35,6 +35,6 @@ services:
 #    deploy:
 #      replicas: 2
 #      labels:
-#        - "docker_swarm_autoupdater.enable=true"  # Enable auto-updates
+#        - "docker_autoupdater.enable=true"  # Enable auto-updates (or docker_swarm_autoupdater.enable=true for backwards compatibility)
 #      restart_policy:
 #        condition: unless-stopped

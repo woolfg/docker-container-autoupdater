@@ -7,7 +7,7 @@ version: '3.8'
 services:
   # Updater service - runs as root with Docker socket access (isolated)
   updater:
-    image: woolfg/docker-swarm-autoupdater-updater:latest
+    image: woolfg/docker-container-autoupdater-updater:latest
     container_name: docker-autoupdater-updater
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -23,7 +23,7 @@ services:
 
   # Trigger service - public facing, no privileged access
   trigger:
-    image: woolfg/docker-swarm-autoupdater-trigger:latest
+    image: woolfg/docker-container-autoupdater-trigger:latest
     container_name: docker-autoupdater-trigger
     ports:
       - "8080:3000"

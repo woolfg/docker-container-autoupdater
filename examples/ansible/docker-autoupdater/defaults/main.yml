@@ -2,8 +2,8 @@
 # Docker Autoupdater configuration
 
 # Docker images
-docker_autoupdater_updater_image: "woolfg/docker-swarm-autoupdater-updater:latest"
-docker_autoupdater_trigger_image: "woolfg/docker-swarm-autoupdater-trigger:latest"
+docker_autoupdater_updater_image: "woolfg/docker-container-autoupdater-updater:latest"
+docker_autoupdater_trigger_image: "woolfg/docker-container-autoupdater-trigger:latest"
 
 # Volume configuration (only used when trigger is enabled)
 docker_autoupdater_volume_name: "docker_autoupdater_shared_volume"

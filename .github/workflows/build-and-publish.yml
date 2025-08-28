@@ -10,8 +10,8 @@ on:
 
 env:
   REGISTRY: docker.io
-  UPDATER_IMAGE_NAME: woolfg/docker-swarm-autoupdater-updater
-  TRIGGER_IMAGE_NAME: woolfg/docker-swarm-autoupdater-trigger
+  UPDATER_IMAGE_NAME: woolfg/docker-container-autoupdater-updater
+  TRIGGER_IMAGE_NAME: woolfg/docker-container-autoupdater-trigger
 
 jobs:
   build-and-publish:

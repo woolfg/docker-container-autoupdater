@@ -5,8 +5,8 @@ docker=$(which docker)
 platform="amd64"
 os="linux"
 
-# allow docker_swarm_autoupdater docker_autoupdater
-filters=("label=docker_swarm_autoupdater.enable=true" "label=docker_autoupdater.enable=true")
+# Support both new docker_autoupdater and legacy docker_swarm_autoupdater labels for backwards compatibility
+filters=("label=docker_autoupdater.enable=true" "label=docker_swarm_autoupdater.enable=true")
 
 echo "Starting autoupdater"
 

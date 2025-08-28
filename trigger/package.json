@@ -1,7 +1,7 @@
 {
-  "name": "docker-swarm-autoupdater-trigger",
+  "name": "docker-container-autoupdater-trigger",
   "version": "1.0.0",
-  "description": "Trigger service for Docker Swarm Autoupdater",
+  "description": "Trigger service for Docker Container Autoupdater",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -11,7 +11,7 @@
   },
   "keywords": [
     "docker",
-    "swarm",
+    "container",
     "autoupdater",
     "webhook",
     "trigger"

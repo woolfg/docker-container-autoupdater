@@ -6,8 +6,8 @@ COMPOSE = docker compose
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "No tags found")
 
 # Docker Hub settings (for reference only)
-UPDATER_IMAGE ?= $(DOCKER_REGISTRY)/$(DOCKER_USER)/docker-swarm-autoupdater-updater
-TRIGGER_IMAGE ?= $(DOCKER_REGISTRY)/$(DOCKER_USER)/docker-swarm-autoupdater-trigger
+UPDATER_IMAGE ?= $(DOCKER_REGISTRY)/$(DOCKER_USER)/docker-container-autoupdater-updater
+TRIGGER_IMAGE ?= $(DOCKER_REGISTRY)/$(DOCKER_USER)/docker-container-autoupdater-trigger
 
 .PHONY: help
 help: ## help message, list all commands
