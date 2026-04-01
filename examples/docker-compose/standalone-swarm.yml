@@ -14,9 +14,9 @@ services:
       CHECK_INTERVAL: 5      # Check interval (not used without trigger file)
       UPDATE_INTERVAL: 900   # Auto-update every 15 minutes (900 seconds)
       # No TRIGGER_FILE - runs in standalone mode
-    restart_policy:
-      condition: unless-stopped
     deploy:
+      restart_policy:
+        condition: any
       placement:
         constraints:
           - node.role == manager  # MUST run on manager node for swarm access
