@@ -113,6 +113,7 @@ for service in $services; do
     # pull image to get updated image
     if ! $docker pull $image_name_version; then
       echo "Failed to pull image for $service, skipping..."
+      echo "Hint: If this is a private registry, provide Docker credentials on the manager node and mount /root/.docker into the updater container."
       continue
     fi
 
@@ -130,7 +131,7 @@ for service in $services; do
     if [ "$image_digest" != "$new_digest" ]; then
         echo "Updating $service"
         if [ "$docker_swarm" = true ]; then
-          $docker service update --image $image_name_version@$new_digest $service
+          $docker service update --with-registry-auth --image $image_name_version@$new_digest $service
         else
           # find the docker_compose file and home directory that was used
           docker_compose_file=$($docker inspect -f '{{ index .Config.Labels "com.docker.compose.project.config_files" }}' "$service")
